@@ -181,7 +181,7 @@ toggleBtn.MouseButton1Click:Connect(function()
 		toggleBtn.Text = "Auto Farm: ENCENDIDO 🎃"
 		toggleBtn.BackgroundColor3 = Color3.fromRGB(255,150,0)
 	else
-		toggleBtn.Text = "Auto Farm: APAGADO"
+		toggleBtn.Text = "Auto Farm: APAGADO 📴"
 		toggleBtn.BackgroundColor3 = Color3.fromRGB(80,30,120)
 	end
 
