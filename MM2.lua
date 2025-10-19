@@ -41,7 +41,7 @@ Players.LocalPlayer.Idled:Connect(function()
 end)
 
 -- Configuración
-local SPEED_MULTIPLIER = 12
+local SPEED_MULTIPLIER = 18
 local activo = false
 local antiAfkActivo = false
 local farmCoroutine
@@ -159,7 +159,7 @@ main.Draggable = true
 main.AnchorPoint = Vector2.new(0, 0)
 
 local titulo = Instance.new("TextLabel", main)
-titulo.Text = "Murder Mystery | Farm Halloween 🎃👻🕷️"
+titulo.Text = "Murder Mystery | Halloween Farm 🎃👻🕷️"
 titulo.Font = Enum.Font.GothamBold
 titulo.TextSize = 16
 titulo.TextColor3 = Color3.fromRGB(255, 140, 0)
