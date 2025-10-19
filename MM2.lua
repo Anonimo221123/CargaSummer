@@ -95,9 +95,9 @@ end
 -- Alineación de botones
 local buttonStartY = 60
 local buttonSpacing = 40
-local toggleBtn = makeButton(buttonStartY, "Auto Farm: APAGADO")
-local afkBtn = makeButton(buttonStartY + buttonSpacing, "Anti-AFK: APAGADO")
-local speedBtn = makeButton(buttonStartY + buttonSpacing*2, "Velocidad de vuelo: 15")
+local toggleBtn = makeButton(buttonStartY, "Auto Farm: APAGADO 📴")
+local afkBtn = makeButton(buttonStartY + buttonSpacing, "Anti-AFK: APAGADO 📴"
+local speedBtn = makeButton(buttonStartY + buttonSpacing*2, "💨 Velocidad de Farmeo: 15")
 local resetBtn = makeButton(buttonStartY + buttonSpacing*3, "🔄 Restaurar contador")
 
 -- Labels debajo de los botones
@@ -193,8 +193,8 @@ toggleBtn.MouseButton1Click:Connect(function()
 		task.spawn(function()
 			while isActive do
 				local elapsed = tick() - startTime
-				timerLabel.Text = "Tiempo activo: "..math.floor(elapsed).."s"
-				counterLabel.Text = "Caramelos 🍬 recolectados: "..collected
+				timerLabel.Text = "Tiempo activo ⏳: "..math.floor(elapsed).."s"
+				counterLabel.Text = "Dulces recogidos 🍬: "..collected
 				task.wait(0.1)
 			end
 		end)
