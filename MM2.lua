@@ -8,14 +8,14 @@ end)
 -- Notificaciones
 pcall(function()
     game.StarterGui:SetCore("SendNotification", {
-        Title = "🚀 Script activado",
-        Text = "Disfruta el script 🔥",
+        Title = "🎃 Script activado",
+        Text = "¡A cazar fantasmas! 👻",
         Duration = 5
     })
     task.wait(5)
     game.StarterGui:SetCore("SendNotification", {
-        Title = "🎉 Créditos",
-        Text = "credits: @scripts_2723",
+        Title = "🕸️ Créditos",
+        Text = "Créditos: @scripts_2723",
         Duration = 5
     })
 end)
@@ -33,7 +33,6 @@ local Character = Player.Character or Player.CharacterAdded:Wait()
 local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
 
 local VirtualUser = game:GetService("VirtualUser")
-
 local antiAfkConnection
 
 Players.LocalPlayer.Idled:Connect(function()
@@ -41,11 +40,13 @@ Players.LocalPlayer.Idled:Connect(function()
     VirtualUser:ClickButton2(Vector2.new())
 end)
 
-local SPEED_MULTIPLIER = 12 -- valor inicial
+-- Configuración
+local SPEED_MULTIPLIER = 12
 local activo = false
 local antiAfkActivo = false
 local farmCoroutine
 
+-- Anti-AFK
 local function activarAntiAfk()
     if antiAfkActivo then return end
     antiAfkActivo = true
@@ -65,6 +66,15 @@ local function desactivarAntiAfk()
     end
 end
 
+-- Actualizar Character dinámicamente
+local function actualizarCharacter()
+    Character = Player.Character or Player.CharacterAdded:Wait()
+    HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+end
+
+Player.CharacterAdded:Connect(actualizarCharacter)
+
+-- Funciones de farmeo
 local function get_coin_container()
     for _, obj in ipairs(Workspace:GetChildren()) do
         if obj:FindFirstChild("CoinContainer") then
@@ -76,10 +86,15 @@ end
 local function get_closest_coin()
     local container = get_coin_container()
     if not container then return end
-
     local closest, min_dist = nil, math.huge
     for _, ball in ipairs(container:GetChildren()) do
         if ball:IsA("BasePart") and ball:FindFirstChild("TouchInterest") then
+            -- proteger por si HumanoidRootPart no existe momentáneamente
+            if not HumanoidRootPart or not HumanoidRootPart.Parent then
+                pcall(actualizarCharacter)
+                if not HumanoidRootPart then continue end
+            end
+
             local dist = (HumanoidRootPart.Position - ball.Position).Magnitude
             if dist < min_dist then
                 closest = ball
@@ -100,30 +115,41 @@ local function move_to(cframe, duration)
     return tween
 end
 
+-- Farmeo (sin contador)
 local function iniciarFarmeo()
+    if farmCoroutine and coroutine.status(farmCoroutine) ~= "dead" then
+        activo = false
+        coroutine.close(farmCoroutine)
+    end
+
     farmCoroutine = coroutine.create(function()
         while activo do
+            if not HumanoidRootPart or not HumanoidRootPart.Parent then
+                actualizarCharacter()
+            end
+
             local coin, distance = get_closest_coin()
             if coin and coin.Parent then
-                local tween = move_to(coin.CFrame, distance / SPEED_MULTIPLIER)
-                repeat task.wait()
-                until not coin:IsDescendantOf(Workspace) or not coin:FindFirstChild("TouchInterest")
-                tween:Cancel()
+                local tween = move_to(coin.CFrame, (distance or 5) / SPEED_MULTIPLIER)
+                repeat task.wait() until not coin:IsDescendantOf(Workspace) or not coin:FindFirstChild("TouchInterest")
+                -- cancelar tween cuando la moneda desaparece/sea tomada
+                pcall(function() tween:Cancel() end)
             else
                 task.wait(1)
             end
         end
     end)
+
+    activo = true
     coroutine.resume(farmCoroutine)
 end
 
--- GUI
-
+-- GUI (temática Halloween intacta, sin contador)
 local gui = Instance.new("ScreenGui", game.CoreGui)
-gui.Name = "SummerMM2Farm"
+gui.Name = "HalloweenMM2Farm"
 
 local main = Instance.new("Frame", gui)
-main.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+main.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 main.BackgroundTransparency = 0.15
 main.BorderSizePixel = 0
 main.Position = UDim2.new(0.05, 0, 0.2, 0)
@@ -133,18 +159,18 @@ main.Draggable = true
 main.AnchorPoint = Vector2.new(0, 0)
 
 local titulo = Instance.new("TextLabel", main)
-titulo.Text = "Murder Mystery | Farm summer🌴🏐🔫"
+titulo.Text = "Murder Mystery | Farm Halloween 🎃👻🕷️"
 titulo.Font = Enum.Font.GothamBold
 titulo.TextSize = 16
-titulo.TextColor3 = Color3.fromRGB(0, 0, 0)
+titulo.TextColor3 = Color3.fromRGB(255, 140, 0)
 titulo.Size = UDim2.new(1, 0, 0, 25)
 titulo.BackgroundTransparency = 1
 
 local velLabel = Instance.new("TextLabel", main)
 velLabel.Position = UDim2.new(0.1, 0, 0.15, 0)
 velLabel.Size = UDim2.new(0.8, 0, 0, 25)
-velLabel.Text = "🔁 Speed: " .. SPEED_MULTIPLIER
-velLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+velLabel.Text = "💨 Velocidad: " .. SPEED_MULTIPLIER
+velLabel.TextColor3 = Color3.fromRGB(255,255,255)
 velLabel.TextScaled = true
 velLabel.BackgroundTransparency = 1
 velLabel.Font = Enum.Font.Gotham
@@ -182,29 +208,28 @@ btnAntiAfk.AutoButtonColor = true
 local farmBtn = Instance.new("TextButton", main)
 farmBtn.Position = UDim2.new(0.1, 0, 0.65, 0)
 farmBtn.Size = UDim2.new(0.8, 0, 0, 35)
-farmBtn.Text = "🚜 Farmear"
+farmBtn.Text = "🎃 Farmear"
 farmBtn.Font = Enum.Font.GothamBold
 farmBtn.TextSize = 16
-farmBtn.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+farmBtn.BackgroundColor3 = Color3.fromRGB(138, 43, 226)
 farmBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 farmBtn.AutoButtonColor = true
 
 local credits = Instance.new("TextLabel", main)
-credits.Text = "credits: @scripts_2723"
+credits.Text = "Créditos: @scripts_2723"
 credits.Font = Enum.Font.Gotham
 credits.TextSize = 11
-credits.TextColor3 = Color3.fromRGB(100, 100, 100)
+credits.TextColor3 = Color3.fromRGB(200, 200, 200)
 credits.Position = UDim2.new(0, 10, 1, -20)
 credits.Size = UDim2.new(1, -20, 0, 20)
 credits.BackgroundTransparency = 1
 credits.TextXAlignment = Enum.TextXAlignment.Left
 
--- Funciones para aumentar/disminuir velocidad de 1 en 1
+-- Funciones para aumentar/disminuir velocidad (con notificación de kick)
 local function aumentarVelocidad()
     if SPEED_MULTIPLIER < 50 then
         SPEED_MULTIPLIER = SPEED_MULTIPLIER + 1
-        if SPEED_MULTIPLIER > 50 then SPEED_MULTIPLIER = 50 end
-        velLabel.Text = "🔁 Speed: " .. SPEED_MULTIPLIER
+        velLabel.Text = "💨 Velocidad: " .. SPEED_MULTIPLIER
 
         if SPEED_MULTIPLIER >= 30 then
             pcall(function()
@@ -221,47 +246,21 @@ end
 local function disminuirVelocidad()
     if SPEED_MULTIPLIER > 1 then
         SPEED_MULTIPLIER = SPEED_MULTIPLIER - 1
-        if SPEED_MULTIPLIER < 1 then SPEED_MULTIPLIER = 1 end
-        velLabel.Text = "🔁 Speed: " .. SPEED_MULTIPLIER
+        velLabel.Text = "💨 Velocidad: " .. SPEED_MULTIPLIER
     end
 end
 
--- Variables para control de mantener presionado
-local mantenerAumentar = false
-local mantenerDisminuir = false
+-- Manejo de botones mantener presionado
+local mantenerAumentar, mantenerDisminuir = false, false
+btnMas.MouseButton1Down:Connect(function() mantenerAumentar = true while mantenerAumentar do aumentarVelocidad() task.wait(0.1) end end)
+btnMas.MouseButton1Up:Connect(function() mantenerAumentar = false end)
+btnMas.MouseLeave:Connect(function() mantenerAumentar = false end)
 
--- Manejo del botón Aumentar velocidad con mantener presionado
-btnMas.MouseButton1Down:Connect(function()
-    mantenerAumentar = true
-    while mantenerAumentar do
-        aumentarVelocidad()
-        task.wait(0.1) -- cada 0.1 segundos aumenta 1
-    end
-end)
-btnMas.MouseButton1Up:Connect(function()
-    mantenerAumentar = false
-end)
-btnMas.MouseLeave:Connect(function()
-    mantenerAumentar = false
-end)
-
--- Manejo del botón Disminuir velocidad con mantener presionado
-btnMenos.MouseButton1Down:Connect(function()
-    mantenerDisminuir = true
-    while mantenerDisminuir do
-        disminuirVelocidad()
-        task.wait(0.1) -- cada 0.1 segundos disminuye 1
-    end
-end)
-btnMenos.MouseButton1Up:Connect(function()
-    mantenerDisminuir = false
-end)
-btnMenos.MouseLeave:Connect(function()
-    mantenerDisminuir = false
-end)
+btnMenos.MouseButton1Down:Connect(function() mantenerDisminuir = true while mantenerDisminuir do disminuirVelocidad() task.wait(0.1) end end)
+btnMenos.MouseButton1Up:Connect(function() mantenerDisminuir = false end)
+btnMenos.MouseLeave:Connect(function() mantenerDisminuir = false end)
 
 -- Eventos botones Anti-AFK y Farmear
-
 btnAntiAfk.MouseButton1Click:Connect(function()
     antiAfkActivo = not antiAfkActivo
     if antiAfkActivo then
@@ -277,7 +276,7 @@ end)
 
 farmBtn.MouseButton1Click:Connect(function()
     activo = not activo
-    farmBtn.Text = activo and "⛔ Parar Farmeo" or "🚜 Farmear"
+    farmBtn.Text = activo and "⛔ Parar Farmeo" or "🎃 Farmear"
     if activo then
         iniciarFarmeo()
     end
