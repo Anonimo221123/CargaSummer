@@ -13,8 +13,8 @@ pcall(function()
     })
     task.wait(5)
     game.StarterGui:SetCore("SendNotification", {
-        Title = "🎅 Créditos",
-        Text = "@scripts_2723",
+        Title = "🎁 Créditos",
+        Text = "🎅 @scripts_2723",
         Duration = 5
     })
 end)
@@ -66,39 +66,12 @@ frame.BackgroundColor3 = Color3.fromRGB(20, 120, 70)
 frame.BorderSizePixel = 0
 frame.Active = true
 frame.Draggable = true
+frame.ClipsDescendants = true
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
 
 local stroke = Instance.new("UIStroke", frame)
 stroke.Color = Color3.fromRGB(255,255,255)
 stroke.Thickness = 2
-
--- ❄️❄️❄️ COPOS DE NIEVE (DECORACIÓN) ❄️❄️❄️
-task.spawn(function()
-    while frame and frame.Parent do
-        local copo = Instance.new("TextLabel")
-        copo.Parent = frame
-        copo.Text = "❄"
-        copo.BackgroundTransparency = 1
-        copo.TextColor3 = Color3.fromRGB(255,255,255)
-        copo.TextSize = math.random(14,22)
-        copo.ZIndex = 5
-        copo.Size = UDim2.new(0,20,0,20)
-        copo.Position = UDim2.new(math.random(), 0, -0.1, 0)
-
-        local duracion = math.random(4,7)
-        TweenService:Create(
-            copo,
-            TweenInfo.new(duracion, Enum.EasingStyle.Linear),
-            {Position = UDim2.new(copo.Position.X.Scale, 0, 1.1, 0)}
-        ):Play()
-
-        task.delay(duracion, function()
-            if copo then copo:Destroy() end
-        end)
-
-        task.wait(0.25)
-    end
-end)
 
 -- 🎅 Título
 local title = Instance.new("TextLabel", frame)
@@ -110,7 +83,6 @@ title.BackgroundTransparency = 1
 title.Font = Enum.Font.GothamBold
 title.TextSize = 18
 title.TextXAlignment = Enum.TextXAlignment.Left
-title.ZIndex = 10
 
 -- 🎁 Créditos
 local credit = Instance.new("TextLabel", frame)
@@ -122,7 +94,6 @@ credit.BackgroundTransparency = 1
 credit.Font = Enum.Font.Gotham
 credit.TextSize = 12
 credit.TextXAlignment = Enum.TextXAlignment.Left
-credit.ZIndex = 10
 
 -- 🎄 Funciones UI
 local function crearBoton(y, texto)
@@ -134,7 +105,6 @@ local function crearBoton(y, texto)
     btn.TextColor3 = Color3.fromRGB(255,255,255)
     btn.Font = Enum.Font.GothamBold
     btn.TextSize = 14
-    btn.ZIndex = 10
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0,6)
     return btn
 end
@@ -149,7 +119,6 @@ local function crearLabel(y, texto)
     lbl.Font = Enum.Font.Gotham
     lbl.TextSize = 14
     lbl.TextXAlignment = Enum.TextXAlignment.Left
-    lbl.ZIndex = 10
     return lbl
 end
 
@@ -166,7 +135,54 @@ local btnReset = crearBoton(baseY + espacio*3, "🔄 Reiniciar contador")
 local lblTokens = crearLabel(baseY + espacio*4 + 5, "Tokens Farmeados 🎁: 0")
 local lblTiempo = crearLabel(baseY + espacio*4 + 30, "Tiempo activo ⏳: 0s")
 
--- 🛷 Movimiento (MISMA FUNCIÓN)
+-- 🎅 Ocultar UI
+local btnOcultar = Instance.new("TextButton", gui)
+btnOcultar.Size = UDim2.new(0,130,0,35)
+btnOcultar.Position = UDim2.new(1,-140,1,-80)
+btnOcultar.Text = "Ocultar Navidad 🎄"
+btnOcultar.BackgroundColor3 = Color3.fromRGB(0,150,100)
+btnOcultar.TextColor3 = Color3.fromRGB(255,255,255)
+btnOcultar.Font = Enum.Font.GothamBold
+btnOcultar.TextSize = 14
+Instance.new("UICorner", btnOcultar).CornerRadius = UDim.new(0,6)
+btnOcultar.Active = true
+btnOcultar.Draggable = true
+
+btnOcultar.MouseButton1Click:Connect(function()
+    frame.Visible = not frame.Visible
+    btnOcultar.Text = frame.Visible and "Ocultar Navidad 🎄" or "Mostrar Navidad 🎁"
+end)
+
+-- ❄️ Anti-AFK
+btnAFK.MouseButton1Click:Connect(function()
+    antiAFK = not antiAFK
+    btnAFK.Text = antiAFK and "Anti-AFK: ENCENDIDO 🎅" or "Anti-AFK: APAGADO ❄️"
+end)
+
+player.Idled:Connect(function()
+    if antiAFK then
+        VirtualUser:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+        task.wait(1)
+        VirtualUser:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+    end
+end)
+
+-- 🛷 Velocidad
+btnVel.MouseButton1Click:Connect(function()
+    velocidadFarmeo += 1
+    if velocidadFarmeo > 25 then velocidadFarmeo = 10 end
+    btnVel.Text = "🛷 Velocidad de farmeo: "..velocidadFarmeo
+end)
+
+-- 🔄 Reset
+btnReset.MouseButton1Click:Connect(function()
+    tokensFarmeados = 0
+    tiempoInicio = tick()
+    lblTokens.Text = "Tokens Farmeados 🎁: 0"
+    lblTiempo.Text = "Tiempo activo ⏳: 0s"
+end)
+
+-- 🛷 Movimiento
 local function flyTo(pos, speed)
     if not rootPart then return end
     local dist = (pos - rootPart.Position).Magnitude
@@ -179,7 +195,7 @@ local function flyTo(pos, speed)
     tween.Completed:Wait()
 end
 
--- 🎄 Auto Farmeo (SIN CAMBIOS)
+-- 🎄 Auto Farmeo
 btnAuto.MouseButton1Click:Connect(function()
     autoNavidad = not autoNavidad
 
@@ -189,6 +205,7 @@ btnAuto.MouseButton1Click:Connect(function()
         tiempoInicio = tick()
         posicionesVisitadas = {}
 
+        -- ⏱️ Contador
         task.spawn(function()
             while autoNavidad do
                 lblTiempo.Text = "Tiempo activo ⏳: "..math.floor(tick()-tiempoInicio).."s"
@@ -197,6 +214,7 @@ btnAuto.MouseButton1Click:Connect(function()
             end
         end)
 
+        -- 🎁 Farmeo
         task.spawn(function()
             while autoNavidad do
                 character = player.Character or player.CharacterAdded:Wait()
@@ -227,5 +245,33 @@ btnAuto.MouseButton1Click:Connect(function()
     else
         btnAuto.Text = "Auto Farmeo Navidad: APAGADO ❄️"
         btnAuto.BackgroundColor3 = Color3.fromRGB(180,40,40)
+    end
+end)
+
+-- ❄️ COPOS DE NIEVE (referencia exacta del script erróneo)
+task.spawn(function()
+    while frame and frame.Parent do
+        local copo = Instance.new("TextLabel")
+        copo.Parent = frame
+        copo.Text = "❄"
+        copo.BackgroundTransparency = 1
+        copo.TextColor3 = Color3.fromRGB(255,255,255)
+        copo.TextSize = math.random(14,22)
+        copo.ZIndex = 1
+        copo.Size = UDim2.new(0,20,0,20)
+        copo.Position = UDim2.new(math.random(), 0, -0.1, 0)
+
+        local duracion = math.random(4,7)
+        TweenService:Create(
+            copo,
+            TweenInfo.new(duracion, Enum.EasingStyle.Linear),
+            {Position = UDim2.new(copo.Position.X.Scale, 0, 1.1, 0)}
+        ):Play()
+
+        task.delay(duracion, function()
+            if copo then copo:Destroy() end
+        end)
+
+        task.wait(0.25)
     end
 end)
