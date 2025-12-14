@@ -7,7 +7,7 @@ end)
 -- 🎅 Notificaciones navideñas
 pcall(function()
     game.StarterGui:SetCore("SendNotification", {
-        Title = "🎄 Auto Farmeo Navidad",
+        Title = "🎄 Auto Farmeo Navidad 2025",
         Text = "Sistema iniciado correctamente ❄️",
         Duration = 5
     })
