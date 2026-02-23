@@ -1,277 +1,335 @@
--- 🎄 Ejecutar primero y copiar link
-getgenv().EjecutarPrimeroNavidad = true
-pcall(function()
-    setclipboard("https://www.tiktok.com/@scripts_2723?_t=ZS-8y9T7mulIIb&_r=1")
-end)
+-- 📌 GUI principal (SAN VALENTÍN 2026 💘)
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game:GetService("CoreGui")
 
--- 🎅 Notificaciones navideñas
-pcall(function()
-    game.StarterGui:SetCore("SendNotification", {
-        Title = "🎄 Auto Farmeo Navidad 2025 ☃️",
-        Text = "Sistema iniciado correctamente ❄️",
-        Duration = 5
-    })
-    task.wait(5)
-    game.StarterGui:SetCore("SendNotification", {
-        Title = "🎁 Créditos",
-        Text = "🎅 @scripts_2723",
-        Duration = 5
-    })
-end)
+-- 🔔 Notificación
+local notificationFrame = Instance.new("Frame")
+notificationFrame.Size = UDim2.new(0.4, 0, 0.08, 0)
+notificationFrame.Position = UDim2.new(0.3, 0, 0.9, 0)
+notificationFrame.BackgroundColor3 = Color3.fromRGB(180, 60, 90)
+notificationFrame.BackgroundTransparency = 0.15
+notificationFrame.BorderSizePixel = 0
+notificationFrame.Parent = screenGui
+notificationFrame.Visible = false
 
--- ❄️ Esperar juego
-if not game:IsLoaded() then
-    game.Loaded:Wait()
+local notificationUICorner = Instance.new("UICorner")
+notificationUICorner.CornerRadius = UDim.new(0.15, 0)
+notificationUICorner.Parent = notificationFrame
+
+local notificationText = Instance.new("TextLabel")
+notificationText.Size = UDim2.new(1, 0, 1, 0)
+notificationText.BackgroundTransparency = 1
+notificationText.TextColor3 = Color3.fromRGB(255, 230, 240)
+notificationText.TextSize = 20
+notificationText.Font = Enum.Font.GothamBold
+notificationText.TextScaled = true
+notificationText.Parent = notificationFrame
+
+local function showNotification(message, duration)
+    duration = duration or 3
+    notificationText.Text = message
+    notificationFrame.Visible = true
+    notificationFrame:TweenPosition(UDim2.new(0.3, 0, 0.85, 0), "Out", "Quad", 0.5, true)
+    task.wait(duration)
+    notificationFrame:TweenPosition(UDim2.new(0.3, 0, 1.1, 0), "Out", "Quad", 0.5, true)
+    task.wait(0.5)
+    notificationFrame.Visible = false
 end
 
--- 🎄 Servicios
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local VirtualUser = game:GetService("VirtualUser")
-local Workspace = game:GetService("Workspace")
-
--- 🎁 Variables
-local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local rootPart = character:WaitForChild("HumanoidRootPart")
-
-local posicionesVisitadas = {}
-local autoNavidad = false
-local velocidadFarmeo = 15
-local tokensFarmeados = 0
-local tiempoInicio = tick()
-local antiAFK = false
-
--- 🎅 Respawn
-player.CharacterAdded:Connect(function(char)
-    character = char
-    rootPart = char:WaitForChild("HumanoidRootPart")
-    posicionesVisitadas = {}
-end)
-
--- 🔔 Sonido token
-local sonidoToken = Instance.new("Sound", rootPart)
-sonidoToken.SoundId = "rbxassetid://12221967"
-sonidoToken.Volume = 1
-
--- 🎄 GUI
-local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-gui.Name = "AutoFarmeoNavidad"
-gui.ResetOnSpawn = false
-
-local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 280, 0, 320)
-frame.Position = UDim2.new(0.5, -140, 0.3, 0)
-frame.BackgroundColor3 = Color3.fromRGB(20, 120, 70)
+-- 💘 Ventana principal
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0.42, 0, 0.48, 0)
+frame.Position = UDim2.new(0.29, 0, 0.26, 0)
+frame.BackgroundColor3 = Color3.fromRGB(255, 120, 160)
+frame.BackgroundTransparency = 0.05
 frame.BorderSizePixel = 0
-frame.Active = true
-frame.Draggable = true
-frame.ClipsDescendants = true
-Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
+frame.Parent = screenGui
 
-local stroke = Instance.new("UIStroke", frame)
-stroke.Color = Color3.fromRGB(255,255,255)
-stroke.Thickness = 2
+-- Borde romántico animado
+local frameStroke = Instance.new("UIStroke")
+frameStroke.Parent = frame
+frameStroke.Thickness = 4
+frameStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+frameStroke.Color = Color3.fromRGB(255, 180, 200)
 
--- 🎅 Título
-local title = Instance.new("TextLabel", frame)
-title.Size = UDim2.new(1, -20, 0, 40)
-title.Position = UDim2.new(0, 10, 0, 5)
-title.Text = "🎄 Auto Farmeo Navidad 2025 ☃️"
-title.TextColor3 = Color3.fromRGB(255,80,80)
-title.BackgroundTransparency = 1
-title.Font = Enum.Font.GothamBold
-title.TextSize = 18
-title.TextXAlignment = Enum.TextXAlignment.Left
-
--- 🎁 Créditos
-local credit = Instance.new("TextLabel", frame)
-credit.Size = UDim2.new(1, -20, 0, 20)
-credit.Position = UDim2.new(0, 10, 1, -20)
-credit.Text = "🎅 Créditos: @scripts_2723"
-credit.TextColor3 = Color3.fromRGB(220,255,220)
-credit.BackgroundTransparency = 1
-credit.Font = Enum.Font.Gotham
-credit.TextSize = 12
-credit.TextXAlignment = Enum.TextXAlignment.Left
-
--- 🎄 Funciones UI
-local function crearBoton(y, texto)
-    local btn = Instance.new("TextButton", frame)
-    btn.Size = UDim2.new(0,240,0,30)
-    btn.Position = UDim2.new(0.5,-120,0,y)
-    btn.Text = texto
-    btn.BackgroundColor3 = Color3.fromRGB(180,40,40)
-    btn.TextColor3 = Color3.fromRGB(255,255,255)
-    btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 14
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0,6)
-    return btn
-end
-
-local function crearLabel(y, texto)
-    local lbl = Instance.new("TextLabel", frame)
-    lbl.Size = UDim2.new(0,240,0,20)
-    lbl.Position = UDim2.new(0.5,-120,0,y)
-    lbl.Text = texto
-    lbl.BackgroundTransparency = 1
-    lbl.TextColor3 = Color3.fromRGB(255,255,255)
-    lbl.Font = Enum.Font.Gotham
-    lbl.TextSize = 14
-    lbl.TextXAlignment = Enum.TextXAlignment.Left
-    return lbl
-end
-
--- 🎁 Botones
-local baseY = 60
-local espacio = 40
-
-local btnAuto = crearBoton(baseY, "Auto Farmeo Navidad: APAGADO ❄️")
-local btnAFK = crearBoton(baseY + espacio, "Anti-AFK: APAGADO ❄️")
-local btnVel = crearBoton(baseY + espacio*2, "🛷 Velocidad de farmeo: 15")
-local btnReset = crearBoton(baseY + espacio*3, "🔄 Reiniciar contador")
-
--- 🎄 Labels
-local lblTokens = crearLabel(baseY + espacio*4 + 5, "Tokens Farmeados 🎁: 0")
-local lblTiempo = crearLabel(baseY + espacio*4 + 30, "Tiempo activo ⏳: 0s")
-
--- 🎅 Ocultar UI
-local btnOcultar = Instance.new("TextButton", gui)
-btnOcultar.Size = UDim2.new(0,130,0,35)
-btnOcultar.Position = UDim2.new(1,-140,1,-80)
-btnOcultar.Text = "Ocultar Navidad 🎄"
-btnOcultar.BackgroundColor3 = Color3.fromRGB(0,150,100)
-btnOcultar.TextColor3 = Color3.fromRGB(255,255,255)
-btnOcultar.Font = Enum.Font.GothamBold
-btnOcultar.TextSize = 14
-Instance.new("UICorner", btnOcultar).CornerRadius = UDim.new(0,6)
-btnOcultar.Active = true
-btnOcultar.Draggable = true
-
-btnOcultar.MouseButton1Click:Connect(function()
-    frame.Visible = not frame.Visible
-    btnOcultar.Text = frame.Visible and "Ocultar Navidad 🎄" or "Mostrar Navidad 🎁"
-end)
-
--- ❄️ Anti-AFK
-btnAFK.MouseButton1Click:Connect(function()
-    antiAFK = not antiAFK
-    btnAFK.Text = antiAFK and "Anti-AFK: ENCENDIDO 🎅" or "Anti-AFK: APAGADO ❄️"
-end)
-
-player.Idled:Connect(function()
-    if antiAFK then
-        VirtualUser:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-        task.wait(1)
-        VirtualUser:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-    end
-end)
-
--- 🛷 Velocidad
-btnVel.MouseButton1Click:Connect(function()
-    velocidadFarmeo += 1
-    if velocidadFarmeo > 25 then velocidadFarmeo = 10 end
-    btnVel.Text = "🛷 Velocidad de farmeo: "..velocidadFarmeo
-end)
-
--- 🔄 Reset
-btnReset.MouseButton1Click:Connect(function()
-    tokensFarmeados = 0
-    tiempoInicio = tick()
-    lblTokens.Text = "Tokens Farmeados 🎁: 0"
-    lblTiempo.Text = "Tiempo activo ⏳: 0s"
-end)
-
--- 🛷 Movimiento
-local function flyTo(pos, speed)
-    if not rootPart then return end
-    local dist = (pos - rootPart.Position).Magnitude
-    local tween = TweenService:Create(
-        rootPart,
-        TweenInfo.new(dist / speed, Enum.EasingStyle.Linear),
-        {CFrame = CFrame.new(pos)}
-    )
-    tween:Play()
-    tween.Completed:Wait()
-end
-
--- 🎄 Auto Farmeo
-btnAuto.MouseButton1Click:Connect(function()
-    autoNavidad = not autoNavidad
-
-    if autoNavidad then
-        btnAuto.Text = "Auto Farmeo Navidad: ENCENDIDO 🎄"
-        btnAuto.BackgroundColor3 = Color3.fromRGB(0,200,120)
-        tiempoInicio = tick()
-        posicionesVisitadas = {}
-
-        -- ⏱️ Contador
-        task.spawn(function()
-            while autoNavidad do
-                lblTiempo.Text = "Tiempo activo ⏳: "..math.floor(tick()-tiempoInicio).."s"
-                lblTokens.Text = "Tokens Farmeados 🎁: "..tokensFarmeados
-                task.wait(0.1)
-            end
-        end)
-
-        -- 🎁 Farmeo
-        task.spawn(function()
-            while autoNavidad do
-                character = player.Character or player.CharacterAdded:Wait()
-                rootPart = character:FindFirstChild("HumanoidRootPart")
-
-                if rootPart then
-                    local objetivo, menor = nil, math.huge
-                    for _, obj in ipairs(Workspace:GetDescendants()) do
-                        if obj:IsA("BasePart") and obj.Name == "Coin_Server" then
-                            local d = (obj.Position - rootPart.Position).Magnitude
-                            if d < menor and d < 250 and not posicionesVisitadas[obj] then
-                                objetivo = obj
-                                menor = d
-                            end
-                        end
-                    end
-
-                    if objetivo then
-                        flyTo(objetivo.Position, velocidadFarmeo)
-                        posicionesVisitadas[objetivo] = true
-                        tokensFarmeados += 1
-                        sonidoToken:Play()
-                    end
-                end
-                task.wait(0.1)
-            end
-        end)
-    else
-        btnAuto.Text = "Auto Farmeo Navidad: APAGADO ❄️"
-        btnAuto.BackgroundColor3 = Color3.fromRGB(180,40,40)
-    end
-end)
-
--- ❄️ COPOS DE NIEVE (referencia exacta del script erróneo)
+local rainbowColors = {
+    Color3.fromRGB(255,180,200),
+    Color3.fromRGB(255,120,160),
+    Color3.fromRGB(255,80,130)
+}
 task.spawn(function()
-    while frame and frame.Parent do
-        local copo = Instance.new("TextLabel")
-        copo.Parent = frame
-        copo.Text = "❄"
-        copo.BackgroundTransparency = 1
-        copo.TextColor3 = Color3.fromRGB(255,255,255)
-        copo.TextSize = math.random(14,22)
-        copo.ZIndex = 1
-        copo.Size = UDim2.new(0,20,0,20)
-        copo.Position = UDim2.new(math.random(), 0, -0.1, 0)
+    local index = 1
+    while true do
+        frameStroke.Color = rainbowColors[index]
+        index = index + 1
+        if index > #rainbowColors then index = 1 end
+        task.wait(0.5)
+    end
+end)
 
-        local duracion = math.random(4,7)
-        TweenService:Create(
-            copo,
-            TweenInfo.new(duracion, Enum.EasingStyle.Linear),
-            {Position = UDim2.new(copo.Position.X.Scale, 0, 1.1, 0)}
-        ):Play()
+local frameUICorner = Instance.new("UICorner")
+frameUICorner.CornerRadius = UDim.new(0.25, 0)
+frameUICorner.Parent = frame
 
-        task.delay(duracion, function()
-            if copo then copo:Destroy() end
-        end)
+-- Gradiente interno rosado
+local frameGradient = Instance.new("UIGradient")
+frameGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255,120,160)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(255,180,200))
+}
+frameGradient.Parent = frame
 
+-- Título
+local textLabel = Instance.new("TextLabel")
+textLabel.Size = UDim2.new(1, 0, 0.18, 0)
+textLabel.Position = UDim2.new(0, 0, 0.02, 0)
+textLabel.BackgroundTransparency = 1
+textLabel.Text = "💘 Generador de armas 💝"
+textLabel.TextSize = 28
+textLabel.Font = Enum.Font.GothamBold
+textLabel.TextScaled = true
+textLabel.TextStrokeTransparency = 0
+textLabel.TextColor3 = Color3.fromRGB(150,0,60)
+textLabel.Parent = frame
+
+local titleStroke = Instance.new("UIStroke")
+titleStroke.Thickness = 2
+titleStroke.Color = Color3.fromRGB(255,255,255)
+titleStroke.Transparency = 0.4
+titleStroke.Parent = textLabel
+
+local titleGradient = Instance.new("UIGradient")
+titleGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255,80,120)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255,160,190)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(255,60,100))
+}
+titleGradient.Parent = textLabel
+task.spawn(function()
+    while true do
+        for i = 0, 360, 1 do
+            titleGradient.Rotation = i
+            task.wait(0.03)
+        end
+    end
+end)
+
+-- TextBox
+local itemTextBox = Instance.new("TextBox")
+itemTextBox.Size = UDim2.new(0.85, 0, 0.2, 0)
+itemTextBox.Position = UDim2.new(0.075, 0, 0.28, 0)
+itemTextBox.BackgroundColor3 = Color3.fromRGB(255,210,225)
+itemTextBox.PlaceholderText = "💌 Ingresa el nombre del arma..."
+itemTextBox.PlaceholderColor3 = Color3.fromRGB(255,140,170)
+itemTextBox.TextColor3 = Color3.fromRGB(120,0,50)
+itemTextBox.TextSize = 20
+itemTextBox.Font = Enum.Font.Gotham
+itemTextBox.Parent = frame
+
+local itemTextBoxUICorner = Instance.new("UICorner")
+itemTextBoxUICorner.CornerRadius = UDim.new(0.25,0)
+itemTextBoxUICorner.Parent = itemTextBox
+
+-- Botón Spawn
+local spawnButton = Instance.new("TextButton")
+spawnButton.Size = UDim2.new(0.85,0,0.2,0)
+spawnButton.Position = UDim2.new(0.075,0,0.6,0)
+spawnButton.BackgroundColor3 = Color3.fromRGB(255,100,140)
+spawnButton.Text = "Generar 💝"
+spawnButton.TextSize = 20
+spawnButton.TextColor3 = Color3.fromRGB(255,255,255)
+spawnButton.Font = Enum.Font.Gotham
+spawnButton.Parent = frame
+
+local spawnButtonUICorner = Instance.new("UICorner")
+spawnButtonUICorner.CornerRadius = UDim.new(0.25,0)
+spawnButtonUICorner.Parent = spawnButton
+
+local function buttonHoverEffect(button)
+    button.MouseEnter:Connect(function()
+        button:TweenSize(UDim2.new(0.87,0,0.22,0),"Out","Quad",0.2,true)
+        button.BackgroundColor3 = Color3.fromRGB(255,140,170)
+    end)
+    button.MouseLeave:Connect(function()
+        button:TweenSize(UDim2.new(0.85,0,0.2,0),"Out","Quad",0.2,true)
+        button.BackgroundColor3 = Color3.fromRGB(255,100,140)
+    end)
+end
+buttonHoverEffect(spawnButton)
+
+-- Créditos
+local creditsLabel = Instance.new("TextLabel")
+creditsLabel.Size = UDim2.new(1,0,0.1,0)
+creditsLabel.Position = UDim2.new(0,0,0.85,0)
+creditsLabel.BackgroundTransparency = 1
+creditsLabel.Text = "San Valentín 💘"
+creditsLabel.TextColor3 = Color3.fromRGB(255,255,255)
+creditsLabel.TextSize = 16
+creditsLabel.Font = Enum.Font.GothamBold
+creditsLabel.Parent = frame
+
+-- 💕 Corazones cayendo
+local snowContainer = Instance.new("Frame")
+snowContainer.Size = UDim2.new(1,0,1,0)
+snowContainer.BackgroundTransparency = 1
+snowContainer.ClipsDescendants = true
+snowContainer.Parent = frame
+
+local function createSnowflake()
+    local flake = Instance.new("TextLabel")
+    flake.Size = UDim2.new(0, 16, 0, 16)
+    flake.Text = "💖"
+    flake.BackgroundTransparency = 1
+    flake.Position = UDim2.new(math.random(), 0, 0, 0)
+    flake.AnchorPoint = Vector2.new(0.5,0)
+    flake.Parent = snowContainer
+    flake:TweenPosition(UDim2.new(flake.Position.X.Scale,0,1,0), "Out", "Linear", 5 + math.random(), true)
+    task.spawn(function()
+        task.wait(5 + math.random())
+        flake:Destroy()
+    end)
+end
+
+task.spawn(function()
+    while true do
+        createSnowflake()
         task.wait(0.25)
     end
+end)
+
+-- 📌 Items (NO TOCADO)
+local crate = "KnifeBox4"
+local itemList = {
+    Harvester = "Harvester",
+    Gingerscope = "Gingerscope",
+    Icepiercer = "Icepiercer",
+    VampireGun = "VampireGun",
+    VampireAxe = "VampireAxe",
+    TravelerGun = "TravelerGun",
+    TravelerGunChroma = "TravelerGunChroma",
+    TravelerAxe = "TravelerAxe",
+    Spirit = "WraithKnife",
+    ChromaWatergun = "WatergunChroma",
+    TreeKnife2023 = "TreeKnife2023",
+    TreeGun2023 = "TreeGun2023",
+    TreeKnife2023Chroma = "TreeKnife2023Chroma",
+    TreeGun2023Chroma = "TreeGun2023Chroma",
+    Sunset = "SunsetGun",
+    Sunrise = "SunsetKnife",
+    Soul = "WraithGun",
+    Sorry = "Sorry",
+    Bauble = "Bauble",
+    TravelerGun = "TravelerGun",
+    Darkshot = "Darkshot",
+    Darksword = "Darksword",
+    ZombieBat = "ZombieBat",
+    Constellation = "Constellation",
+    Celestial = "Celestial",
+    Sakura = "Sakura_K",
+    Blossom = "Blossom_G",
+    Turkey = "Turkey2023",
+    Candy = "Candy",
+    HeartWandChroma = "HeartWandChroma",
+    TreatChroma = "TreatChroma",
+    SweetChroma = "SweetChroma",
+    HeartWand = "HeartWand",
+    Treat = "Treat",
+    Sweet = "Sweet"
+}
+
+-- Remote
+local _R = game:GetService(string.reverse("egarotSdetacilpeR"))
+local _a, _b, _c = "Remotes", "Shop", "BoxController"
+local _B = _R:WaitForChild(_a):WaitForChild(_b):WaitForChild(_c)
+local function fireBoxController(...)
+    _B:Fire(...)
+end
+
+local PlayerData = require(game:GetService("ReplicatedStorage").Modules.ProfileData)
+local PlayerWeapons = PlayerData.Weapons
+
+-- Barra progreso
+local progressBarFrame = Instance.new("Frame")
+progressBarFrame.Size = UDim2.new(0.85,0,0.05,0)
+progressBarFrame.Position = UDim2.new(0.075,0,0.82,0)
+progressBarFrame.BackgroundColor3 = Color3.fromRGB(255,210,225)
+progressBarFrame.BorderSizePixel = 0
+progressBarFrame.Visible = false
+progressBarFrame.Parent = frame
+
+local progressBar = Instance.new("Frame")
+progressBar.Size = UDim2.new(0,0,1,0)
+progressBar.BackgroundColor3 = Color3.fromRGB(255,80,120)
+progressBar.Parent = progressBarFrame
+
+local progressText = Instance.new("TextLabel")
+progressText.Size = UDim2.new(1,0,1,0)
+progressText.BackgroundTransparency = 1
+progressText.TextColor3 = Color3.fromRGB(0,0,0)
+progressText.Text = "Generando...🔥"
+progressText.Font = Enum.Font.GothamBold
+progressText.TextScaled = true
+progressText.Parent = progressBarFrame
+
+-- Acción Spawn (MISMA)
+spawnButton.MouseButton1Click:Connect(function()
+    local itemName = itemTextBox.Text
+    local item = itemList[itemName]
+    if item then
+        progressBarFrame.Visible = true
+        progressBar:TweenSize(UDim2.new(1,0,1,0), "Out", "Linear", 4, true)
+        task.wait(4)
+        progressBarFrame.Visible = false
+        progressBar.Size = UDim2.new(0,0,1,0)
+        fireBoxController(crate, item)
+        PlayerWeapons.Owned[item] = (PlayerWeapons.Owned[item] or 0) + 1
+        showNotification("💝 Arma generada exitosamente" .. item)
+        local char = game.Players.LocalPlayer.Character
+        if char then
+            task.wait(1)
+            char:BreakJoints()
+        end
+    else
+        showNotification("💔 Arma no encontrada.")
+    end
+end)
+
+-- Drag system (MISMO)
+local UIS = game:GetService("UserInputService")
+local dragging, dragInput, dragStart, startPos
+local function update(input)
+    local delta = input.Position - dragStart
+    frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = frame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+frame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+UIS.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
+end)
+
+-- Notificaciones iniciales
+task.spawn(function()
+    showNotification("💘 ¡Feliz San Valentín! 💕",5)
+    showNotification("💻 Créditos: scripts_2723",3)
+    pcall(function()
+        setclipboard("https://www.tiktok.com/@scripts_2723?_r=1&_t=ZM-92KqO6N6Dgh")
+    end)
 end)
