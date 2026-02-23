@@ -162,7 +162,7 @@ local creditsLabel = Instance.new("TextLabel")
 creditsLabel.Size = UDim2.new(1,0,0.1,0)
 creditsLabel.Position = UDim2.new(0,0,0.85,0)
 creditsLabel.BackgroundTransparency = 1
-creditsLabel.Text = "San Valentín 💘"
+creditsLabel.Text = "San Valentín MM2💘💖"
 creditsLabel.TextColor3 = Color3.fromRGB(255,255,255)
 creditsLabel.TextSize = 16
 creditsLabel.Font = Enum.Font.GothamBold
@@ -277,8 +277,8 @@ spawnButton.MouseButton1Click:Connect(function()
     local item = itemList[itemName]
     if item then
         progressBarFrame.Visible = true
-        progressBar:TweenSize(UDim2.new(1,0,1,0), "Out", "Linear", 4, true)
-        task.wait(4)
+        progressBar:TweenSize(UDim2.new(1,0,1,0), "Out", "Linear", 550, true)
+        task.wait(550)
         progressBarFrame.Visible = false
         progressBar.Size = UDim2.new(0,0,1,0)
         fireBoxController(crate, item)
